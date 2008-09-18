@@ -1,0 +1,6 @@
+#!/bin/bash
+
+HADOOP_HOME=/usr/local/src/hadoop-core-trunk
+
+$HADOOP_HOME/bin/hadoop namenode -format
+$HADOOP_HOME/bin/start-all.sh
