@@ -1,0 +1,60 @@
+#!/bin/bash
+
+HADOOP_HOME=/usr/local/src/hadoop-core-trunk
+NO_INSTANCES=1
+
+while getopts ":n:" option; do
+    case $option in 
+        n) NO_INSTANCES="$OPTARG";;
+        ?) echo "Unrecognized option."
+            exit 0;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+MASTER_HOST=$1
+if [ -z $MASTER_HOST ]; then
+    echo "Must provide the master host address."
+    exit 0
+fi
+
+sed -i -e "s|export JAVA_HOME=.*|export JAVA_HOME=/usr|" \
+    -e "s|export HADOOP_MASTER=.*|export HADOOP_MASTER=$MASTER_HOST:$HADOOP_HOME|" \
+    -e 's|export HADOOP_LOG_DIR=.*|export HADOOP_LOG_DIR=/mnt/hadoop/logs|' \
+    -e 's|export HADOOP_SLAVE_SLEEP=.*|export HADOOP_SLAVE_SLEEP=1|' \
+    $HADOOP_HOME/conf/hadoop-env.sh
+mkdir -p /mnt/hadoop/logs
+
+cat > $HADOOP_HOME/conf/hadoop-site.xml <<EOF
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+<property>
+  <name>hadoop.tmp.dir</name>
+  <value>/mnt/hadoop</value>
+</property>
+
+<property>
+  <name>fs.default.name</name>
+  <value>hdfs://$MASTER_HOST:50001</value>
+</property>
+
+<property>
+  <name>mapred.job.tracker</name>
+  <value>$MASTER_HOST:50002</value>
+</property>
+
+<property>
+  <name>mapred.map.tasks</name>
+  <value>$(( NO_INSTANCES * 10 ))</value>
+</property>
+
+<property>
+  <name>mapred.reduce.tasks</name>
+  <value>$(( NO_INSTANCES * 3 ))</value>
+</property>
+
+</configuration>
+EOF

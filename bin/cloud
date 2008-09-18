@@ -1,0 +1,53 @@
+#!/bin/bash
+
+function usage {
+    progname=${0##*/}
+    cat<<ENDOFUSAGE
+$progname [-s settings] (launch|login|status|bundle|master|terminate)
+ENDOFUSAGE
+}
+
+export bin=`dirname "$0"`
+settings=$bin/../conf/settings
+
+## Read options
+while getopts ":s:" option; do
+    case $option in
+	s) settings="$OPTARG";;
+	?) usage
+            exit 0;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+## Import settings
+. $settings
+export instances=$bin/../instances/$GROUP
+export master=$bin/../instances/$GROUP.master
+export slaves=$bin/../instances/$GROUP.slaves
+
+## Determine what action to take
+case "$1" in
+    launch)
+        $bin/launch.sh
+        ;;
+    login)
+        $bin/login.sh
+        ;;
+    status)
+	$bin/status.sh
+        ;;
+    bundle)
+	$bin/bundle.sh
+	;;
+    master)
+	cut -f 1 $master
+	;;
+    terminate)
+	$bin/terminate.sh
+        ;;
+    *)
+        usage
+	exit 0
+        ;;
+esac

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Set environment variables for running a cloud on Amazon EC2 here. All are required.
+
+## Amazon Account Settings
+export AWS_ACCOUNT_ID=
+export AWS_ACCESS_KEY_ID=
+export AWS_SECRET_ACCESS_KEY=
+
+## Amazon S3 Settings
+export S3_BUCKET=nubic-images
+export IMAGE_NAME=mapreduce_32bit
+
+## Local EC2 Settings (rely on Getting Started Guide defaults)
+export EC2_KEYDIR=`dirname "$EC2_PRIVATE_KEY"`
+export KEY_NAME=mapred-keypair # What keypair do we use to launch instances?
+export PRIVATE_KEY_PATH=$EC2_KEYDIR/id_rsa-$KEY_NAME # Where is the private key located?
+export SSH_OPTS="-i $PRIVATE_KEY_PATH -o StrictHostKeyChecking=no"
+
+## 'Cloud' Specific Settings
+export GROUP=nubic-cluster-group # must be unique for each cloud 
+export NUM_INSTANCES=2
+export IMAGE_HADOOP_HOME=/usr/local/src/hadoop-core-trunk
