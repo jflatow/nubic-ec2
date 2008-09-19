@@ -1,0 +1,29 @@
+The scripts in this package simplify the process of creating an ad-hoc `Hadoop` cluster on the `EC2`, using a pre-built `AMI`.
+
+To use the tools in this package:
+
+Copy the file ``conf/settings.template`` to ``conf/settings`` and set the variables in it correctly.
+
+Run:
+
+::
+
+        bin/cloud launch
+
+to start a cluster with the number of instances specified in the settings file.
+Once the cluster starts, run:
+
+::
+
+        bin/cloud login
+
+to login to the master node.
+Once you are finished, run:
+
+::
+
+        bin/cloud terminate
+
+to terminate the cluster.
+
+See the manual under ``doc/`` for more information.
